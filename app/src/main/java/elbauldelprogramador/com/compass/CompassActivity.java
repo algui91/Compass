@@ -16,8 +16,10 @@
 
 package elbauldelprogramador.com.compass;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -29,6 +31,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -82,7 +85,7 @@ public class CompassActivity extends Activity {
                     // need to slow down if the distance is short
                     mDirection = normalizeDegree(mDirection
                             + ((to - mDirection) * mInterpolator.getInterpolation(Math
-                                    .abs(distance) > MAX_ROATE_DEGREE ? 0.4f : 0.3f)));
+                            .abs(distance) > MAX_ROATE_DEGREE ? 0.4f : 0.3f)));
                     mPointer.updateDirection(mDirection);
                 }
 
@@ -105,6 +108,16 @@ public class CompassActivity extends Activity {
     protected void onResume() {
         super.onResume();
         if (mLocationProvider != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             updateLocation(mLocationManager.getLastKnownLocation(mLocationProvider));
             mLocationManager.requestLocationUpdates(mLocationProvider, 2000, 10, mLocationListener);
         } else {
@@ -126,6 +139,16 @@ public class CompassActivity extends Activity {
             mSensorManager.unregisterListener(mOrientationSensorEventListener);
         }
         if (mLocationProvider != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             mLocationManager.removeUpdates(mLocationListener);
         }
     }
@@ -341,6 +364,16 @@ public class CompassActivity extends Activity {
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
             if (status != LocationProvider.OUT_OF_SERVICE) {
+                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
                 updateLocation(mLocationManager.getLastKnownLocation(mLocationProvider));
             } else {
                 mLocationTextView.setText(R.string.cannot_get_location);
